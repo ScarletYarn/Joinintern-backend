@@ -1,0 +1,12 @@
+server:
+  port: 8080
+#  error:
+#    path: /index.html
+
+spring:
+  datasource:
+    url: jdbc:mysql://47.103.194.103:3306/joinintern_dev
+    username: dev
+    password: join@intern
+#  resources:
+#    static-locations: /root/joinintern/public/
