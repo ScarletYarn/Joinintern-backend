@@ -6,6 +6,8 @@ target/
 src/main/resources/3388229_joinintern.cn.pfx
 src/main/resources/static
 .mvn
+src/main/java/com/joininterngroup/joinintern/mapper
+src/main/java/com/joininterngroup/joinintern/model
 
 ### STS ###
 .apt_generated
