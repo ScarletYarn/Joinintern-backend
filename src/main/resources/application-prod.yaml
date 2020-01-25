@@ -13,3 +13,6 @@ spring:
       - classpath:sql/prod-db.sql
       - classpath:sql/ddl.sql
       - classpath:sql/common-data.sql
+
+joinintern:
+  mediaPath: /root/joinintern/media/

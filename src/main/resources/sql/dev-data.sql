@@ -16,11 +16,11 @@ INSERT INTO post(duration, location, distanceZB, distanceMH, post_content, compl
 (80, '金沙江路996号', 2, 2.0, '招聘程序员一名', false, '2020-2-2', 'openid_3', '2020-1-1', '2020-2-2'),
 (20, '金沙江路251号', 3.1, 3.3, '招聘程序员一名', true, '2020-3-1', 'openid_4', '2020-3-1', '2020-3-3');
 
-INSERT INTO video(video_description, video_path, checked, poster_id, checker_id) VALUES
-('金沙江路招聘挖路员视频', '/joinintern/media-dev/video/1.mp4', true, 'openid_1', 'openid_4'),
-('金沙江路招聘管道工视频', '/joinintern/media-dev/video/2.mp4', true, 'openid_2', 'openid_4'),
-('金沙江路招聘勘探员视频', '/joinintern/media-dev/video/3.mp4', false, 'openid_3', null),
-('金沙江路招聘监工视频', '/joinintern/media-dev/video/4.mp4', true, 'openid_1', 'openid_4');
+INSERT INTO video(video_description, video_path, checked, poster_id, checker_id, post_date, check_date) VALUES
+('金沙江路招聘挖路员视频', '/joinintern/media-dev/video/1.mp4', true, 'openid_1', 'openid_4', '2020-1-1', '2020-2-1'),
+('金沙江路招聘管道工视频', '/joinintern/media-dev/video/2.mp4', true, 'openid_2', 'openid_4', '2020-1-10', '2020-1-2'),
+('金沙江路招聘勘探员视频', '/joinintern/media-dev/video/3.mp4', false, 'openid_3', null, '2020-1-1', '2020-1-1'),
+('金沙江路招聘监工视频', '/joinintern/media-dev/video/4.mp4', true, 'openid_1', 'openid_4', '2020-1-20', '2020-1-21');
 
 INSERT INTO video_click(video_click_time, clicker_id, video_id) VALUES
 ('2020-1-1', 'openid_1', 1),

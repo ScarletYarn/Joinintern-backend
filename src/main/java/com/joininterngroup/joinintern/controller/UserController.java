@@ -1,13 +1,12 @@
 package com.joininterngroup.joinintern.controller;
 
-import com.joininterngroup.joinintern.mapper.MyUserMapper;
+import com.joininterngroup.joinintern.mapper.*;
 import com.joininterngroup.joinintern.model.MyUser;
 import com.joininterngroup.joinintern.utils.Authority;
 import com.joininterngroup.joinintern.utils.WeixinController;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import com.joininterngroup.joinintern.mapper.MyUserDynamicSqlSupport;
 import static org.mybatis.dynamic.sql.SqlBuilder.*;
 
 import java.util.List;
@@ -134,14 +133,16 @@ public class UserController {
             @RequestParam(required = false) Integer enterpriseTypeId,
             @RequestParam String id
     ) {
-        this.myUserMapper.update(c -> {
-            if (gender != null) c.set(MyUserDynamicSqlSupport.gender).equalTo(gender);
-            if (level != null) c.set(MyUserDynamicSqlSupport.level).equalTo(level);
-            if (major != null) c.set(MyUserDynamicSqlSupport.major).equalTo(major);
-            if (enterpriseTypeId != null) c.set(MyUserDynamicSqlSupport.enterpriseTypeId).equalTo(enterpriseTypeId);
-            c.where(MyUserDynamicSqlSupport.userId, isEqualTo(id));
-            return c;
-        });
+        this.myUserMapper.update(c -> c.set(MyUserDynamicSqlSupport.gender)
+                .equalToWhenPresent(gender)
+                .set(MyUserDynamicSqlSupport.level)
+                .equalToWhenPresent(level)
+                .set(MyUserDynamicSqlSupport.major)
+                .equalToWhenPresent(major)
+                .set(MyUserDynamicSqlSupport.enterpriseTypeId)
+                .equalToWhenPresent(enterpriseTypeId)
+                .where(MyUserDynamicSqlSupport.userId, isEqualTo(id))
+        );
         return true;
     }
 

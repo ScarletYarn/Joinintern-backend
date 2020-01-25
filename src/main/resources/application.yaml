@@ -3,3 +3,6 @@ spring:
     active: dev
   resources:
     static-locations: file:/root/joinintern/public/
+
+joinintern:
+  maxChunkLength: 4096

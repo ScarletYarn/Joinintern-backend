@@ -15,15 +15,31 @@
                              targetPackage="com.joininterngroup.joinintern.mapper"
                              targetProject="src/main/java" />
 
-        <table tableName="major" />
-        <table tableName="enterprise_type" />
+        <table tableName="major">
+            <generatedKey column="major_id" sqlStatement="JDBC" />
+        </table>
+        <table tableName="enterprise_type">
+            <generatedKey column="enterprise_type_id" sqlStatement="JDBC" />
+        </table>
         <table tableName="my_user" />
-        <table tableName="message" />
-        <table tableName="post" />
-        <table tableName="label" />
-        <table tableName="video" />
-        <table tableName="video_click" />
-        <table tableName="post_click" />
+        <table tableName="message">
+            <generatedKey column="message_id" sqlStatement="JDBC" />
+        </table>
+        <table tableName="post">
+            <generatedKey column="post_id" sqlStatement="JDBC" />
+        </table>
+        <table tableName="label">
+            <generatedKey column="label_id" sqlStatement="JDBC" />
+        </table>
+        <table tableName="video">
+            <generatedKey column="video_id" sqlStatement="JDBC" />
+        </table>
+        <table tableName="video_click">
+            <generatedKey column="video_click_id" sqlStatement="JDBC" />
+        </table>
+        <table tableName="post_click">
+            <generatedKey column="post_click_id" sqlStatement="JDBC" />
+        </table>
         <table tableName="post_label" />
         <table tableName="post_major" />
     </context>

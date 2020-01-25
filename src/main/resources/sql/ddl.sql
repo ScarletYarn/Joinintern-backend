@@ -63,9 +63,12 @@ CREATE TABLE video (
     video_id INTEGER PRIMARY KEY AUTO_INCREMENT ,
     video_description VARCHAR (500) ,
     video_path VARCHAR (1000) ,
-    checked BOOLEAN ,
+    -- pass, unchecked, reject
+    checked VARCHAR (100) ,
     poster_id VARCHAR (100) ,
     checker_id VARCHAR (100) ,
+    post_date DATE ,
+    check_date DATE ,
     FOREIGN KEY(poster_id) REFERENCES my_user(user_id) ,
     FOREIGN KEY(checker_id) REFERENCES my_user(user_id)
 );

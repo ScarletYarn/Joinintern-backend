@@ -11,3 +11,7 @@ spring:
       - classpath:sql/ddl.sql
       - classpath:sql/common-data.sql
       - classpath:sql/dev-data.sql
+    initialization-mode: always
+
+joinintern:
+  mediaPath: /root/joinintern/media-dev/
