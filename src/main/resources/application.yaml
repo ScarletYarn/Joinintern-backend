@@ -2,7 +2,10 @@ spring:
   profiles:
     active: dev
   resources:
-    static-locations: file:/root/joinintern/public/
+    static-locations:
+      - file:/root/joinintern/public/
+      - file:/root/joinintern/media/
 
 joinintern:
   maxChunkLength: 4096
+  maxChatBufferLen: 2048

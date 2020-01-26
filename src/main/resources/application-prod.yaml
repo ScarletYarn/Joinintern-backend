@@ -16,3 +16,7 @@ spring:
 
 joinintern:
   mediaPath: /root/joinintern/media/
+
+logging:
+  file:
+    path: /root/joinintern/log/

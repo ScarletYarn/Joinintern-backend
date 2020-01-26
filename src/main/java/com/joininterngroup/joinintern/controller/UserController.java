@@ -1,5 +1,6 @@
 package com.joininterngroup.joinintern.controller;
 
+import com.joininterngroup.joinintern.helpers.UserEssential;
 import com.joininterngroup.joinintern.mapper.*;
 import com.joininterngroup.joinintern.model.MyUser;
 import com.joininterngroup.joinintern.utils.Authority;
@@ -37,6 +38,21 @@ public class UserController {
     @RequestMapping(method = RequestMethod.POST, path = "/get")
     List<MyUser> getAllUser() {
         return this.myUserMapper.select(c -> c);
+    }
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.GET, path = "/query")
+    UserEssential query(
+            @RequestParam String user_id
+    ) {
+        Optional<MyUser> user = this.myUserMapper.selectOne(c ->
+                c.where(MyUserDynamicSqlSupport.userId, isEqualTo(user_id)));
+        if (!user.isPresent()) return null;
+        UserEssential userEssential = new UserEssential();
+        userEssential.setUserId(user_id);
+        userEssential.setNickname(user.get().getUserId());
+        userEssential.setAvatar(user.get().getAvatar());
+        return userEssential;
     }
 
     @ResponseBody

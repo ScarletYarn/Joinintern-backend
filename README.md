@@ -10,3 +10,4 @@ The static path is /root/joinintern/public/
 ##### 0.0.1: Created the schemas, configured the redirection and error pages.
 ##### 0.0.2: Split the SQL scripts, added Mybatis Generator Core, added several controllers, helpers and utilities.
 ##### 0.0.3: Completed the API excepts those related to message.
+##### 0.1.0: Added support for online chat.

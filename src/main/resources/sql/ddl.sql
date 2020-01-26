@@ -31,6 +31,7 @@ CREATE TABLE message (
     has_read BOOLEAN ,
     message_time DATE ,
     message_content VARCHAR (1000) ,
+    binary_content VARCHAR (1000) ,
     sender_id VARCHAR (100) ,
     receiver_id VARCHAR (100) ,
     FOREIGN KEY(sender_id) REFERENCES my_user(user_id) ,

@@ -9,6 +9,11 @@
       "name": "joinintern.maxChunkLength",
       "type": "java.lang.String",
       "description": "Maximum length of the download buffer."
+    },
+    {
+      "name": "joinintern.maxChatBufferLen",
+      "type": "java.lang.String",
+      "description": "The length of the buffer for the chatting."
     }
   ]
 }

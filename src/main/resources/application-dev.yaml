@@ -14,4 +14,4 @@ spring:
     initialization-mode: always
 
 joinintern:
-  mediaPath: /root/joinintern/media-dev/
+  mediaPath: /root/joinintern/media/dev/

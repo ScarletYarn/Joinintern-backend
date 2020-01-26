@@ -1,8 +1,11 @@
 package com.joininterngroup.joinintern.controller;
 
+import com.joininterngroup.joinintern.mapper.MessageDynamicSqlSupport;
 import com.joininterngroup.joinintern.mapper.MessageMapper;
 import com.joininterngroup.joinintern.model.Message;
 import org.springframework.web.bind.annotation.*;
+
+import static org.mybatis.dynamic.sql.SqlBuilder.*;
 
 import java.util.List;
 
@@ -21,6 +24,7 @@ public class MessageController {
     public List<Message> getMessage(
             @RequestParam String user_id
     ) {
-        return this.messageMapper.select(c -> c);
+        return this.messageMapper.select(c ->
+                c.where(MessageDynamicSqlSupport.receiverId, isEqualTo(user_id)));
     }
 }
