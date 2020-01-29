@@ -4,6 +4,8 @@ import java.util.List;
 
 public class PostFilterObject {
 
+    private String title;
+
     private Integer minDuration;
 
     private Integer maxDuration;
@@ -13,6 +15,14 @@ public class PostFilterObject {
     private float distanceZB;
 
     private float distanceMH;
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
     public Integer getMinDuration() {
         return minDuration;
@@ -57,7 +67,8 @@ public class PostFilterObject {
     @Override
     public String toString() {
         return "PostFilterObject{" +
-                "minDuration=" + minDuration +
+                "title='" + title + '\'' +
+                ", minDuration=" + minDuration +
                 ", maxDuration=" + maxDuration +
                 ", majors=" + majors +
                 ", distanceZB=" + distanceZB +

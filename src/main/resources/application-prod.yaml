@@ -14,9 +14,6 @@ spring:
       - classpath:sql/ddl.sql
       - classpath:sql/common-data.sql
 
-joinintern:
-  mediaPath: /root/joinintern/media/
-
 logging:
   file:
     path: /root/joinintern/log/

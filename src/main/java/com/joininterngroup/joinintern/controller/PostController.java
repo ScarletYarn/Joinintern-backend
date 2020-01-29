@@ -45,8 +45,32 @@ public class PostController {
     }
 
     @ResponseBody
+    @RequestMapping(method = RequestMethod.POST, path = "/query")
+    Post query(
+            @RequestParam Integer id
+    ) {
+        Optional<Post> post = this.postMapper.selectOne(c -> c
+                .where(PostDynamicSqlSupport.postId, isEqualTo(id))
+        );
+        return post.orElse(null);
+    }
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.POST, path = "/delete")
+    boolean delete(
+            @RequestParam String uid,
+            @RequestParam Integer id
+    ) {
+        if (!this.authority.checkAdmin(uid)) return false;
+        int n = this.postMapper.delete(c -> c.where(PostDynamicSqlSupport.postId, isEqualTo(id)));
+        if (n > 0) log.info(String.format("Post with id %d is deleted by %s", id, uid));
+        return n > 0;
+    }
+
+    @ResponseBody
     @RequestMapping(method = RequestMethod.POST, path = "/create")
     boolean createPost(
+            @RequestParam(required = false) String postTitle,
             @RequestParam(required = false) Integer duration,
             @RequestParam(required = false) String location,
             @RequestParam(required = false) Float distancezb,
@@ -58,6 +82,7 @@ public class PostController {
             @RequestParam(required = false) Date endTime
     ) {
         Post post = new Post();
+        post.setPostTitle(postTitle);
         if (duration != null) post.setDuration(duration);
         if (location != null) post.setLocation(location);
         if (distancezb != null) post.setDistancezb(distancezb);
@@ -68,14 +93,16 @@ public class PostController {
         post.setAuthorId(authorId);
         if (startTime != null) post.setStartTime(startTime);
         if (endTime != null) post.setEndTime(endTime);
-        this.postMapper.insert(post);
-        return true;
+        int n = this.postMapper.insert(post);
+        if (n > 0) log.info(String.format("Post with id %d is created", post.getPostId()));
+        return n > 0;
     }
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.POST, path = "/filter")
     List<Post> filter(@RequestBody PostFilterObject postFilterObject) {
         SelectStatementProvider selectStatement = selectDistinct(
+                PostDynamicSqlSupport.postTitle,
                 PostDynamicSqlSupport.postId,
                 PostDynamicSqlSupport.duration,
                 PostDynamicSqlSupport.location,
@@ -92,6 +119,7 @@ public class PostController {
                 .join(PostMajorDynamicSqlSupport.postMajor)
                 .on(PostDynamicSqlSupport.postId, equalTo(PostMajorDynamicSqlSupport.postId))
                 .where(PostDynamicSqlSupport.duration, isLessThanOrEqualToWhenPresent(postFilterObject.getMaxDuration()))
+                .and(PostDynamicSqlSupport.postTitle, isEqualToWhenPresent(postFilterObject.getTitle()))
                 .and(PostDynamicSqlSupport.duration, isGreaterThanOrEqualToWhenPresent(postFilterObject.getMinDuration()))
                 .and(PostDynamicSqlSupport.distancezb, isLessThanOrEqualToWhenPresent(postFilterObject.getDistanceZB()))
                 .and(PostDynamicSqlSupport.distancemh, isLessThanOrEqualToWhenPresent(postFilterObject.getDistanceMH()))
@@ -107,6 +135,7 @@ public class PostController {
     boolean updatePost(
             @RequestParam Integer postId,
             @RequestParam String openId,
+            @RequestParam(required = false) String postTitle,
             @RequestParam(required = false) Integer duration,
             @RequestParam(required = false) String location,
             @RequestParam(required = false) Float distancezb,
@@ -121,8 +150,10 @@ public class PostController {
         else if (!post.get().getAuthorId().equals(openId)) {
             if (!this.authority.checkAdmin(openId)) return false;
         }
-        this.postMapper.update(c -> c.set(PostDynamicSqlSupport.duration)
+        int n = this.postMapper.update(c -> c.set(PostDynamicSqlSupport.duration)
                 .equalToWhenPresent(duration)
+                .set(PostDynamicSqlSupport.postTitle)
+                .equalToWhenPresent(postTitle)
                 .set(PostDynamicSqlSupport.location)
                 .equalToWhenPresent(location)
                 .set(PostDynamicSqlSupport.distancezb)
@@ -138,17 +169,17 @@ public class PostController {
                 .set(PostDynamicSqlSupport.endTime)
                 .equalToWhenPresent(endTime)
                 .where(PostDynamicSqlSupport.postId, isEqualTo(postId))
-
         );
-        return false;
+        return n > 0;
     }
 
     @RequestMapping(method = RequestMethod.POST, path = "/complete")
     boolean completePost(@RequestParam Integer id) {
-        this.postMapper.update(c -> c.set(PostDynamicSqlSupport.completed)
+        int n = this.postMapper.update(c -> c.set(PostDynamicSqlSupport.completed)
                 .equalTo(true)
                 .where(PostDynamicSqlSupport.postId, isEqualTo(id)));
-        return true;
+        if (n > 0) log.info(String.format("Post %d is completed", id));
+        return n > 0;
     }
 
     @RequestMapping(method = RequestMethod.POST, path = "/click")

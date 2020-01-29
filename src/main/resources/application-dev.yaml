@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8090
 
 spring:
   datasource:
@@ -13,5 +13,3 @@ spring:
       - classpath:sql/dev-data.sql
     initialization-mode: always
 
-joinintern:
-  mediaPath: /root/joinintern/media/dev/

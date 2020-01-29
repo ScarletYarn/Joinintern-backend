@@ -6,6 +6,7 @@ import com.joininterngroup.joinintern.model.MyUser;
 import com.joininterngroup.joinintern.utils.Authority;
 import com.joininterngroup.joinintern.utils.WeixinController;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import static org.mybatis.dynamic.sql.SqlBuilder.*;
@@ -53,6 +54,19 @@ public class UserController {
         userEssential.setNickname(user.get().getUserId());
         userEssential.setAvatar(user.get().getAvatar());
         return userEssential;
+    }
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.POST, path = "/super/login")
+    boolean superLogin(
+            @RequestParam String uid,
+            @RequestParam String password
+    ) {
+        String code;
+        code = DigestUtils.md5DigestAsHex(password.getBytes());
+        boolean res =  uid.equals("ultra master") && code.equals("541fec3d28258cde4d1a9f92fb687f39");
+        if (res) log.info("Super master login");
+        return res;
     }
 
     @ResponseBody

@@ -6,9 +6,11 @@ import com.joininterngroup.joinintern.mapper.VideoMapper;
 import com.joininterngroup.joinintern.model.Video;
 import com.joininterngroup.joinintern.model.VideoClick;
 import com.joininterngroup.joinintern.utils.Authority;
-import com.joininterngroup.joinintern.utils.FileFetcher;
+import com.joininterngroup.joinintern.utils.FileService;
+import com.joininterngroup.joinintern.utils.JoinInternEnvironment;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import static org.mybatis.dynamic.sql.SqlBuilder.*;
 
@@ -23,22 +25,49 @@ public class VideoController {
 
     private VideoMapper videoMapper;
 
-    private FileFetcher fileFetcher;
+    private FileService fileService;
 
     private Authority authority;
 
     private VideoClickMapper videoClickMapper;
 
-    public VideoController(
-            VideoMapper videoMapper,
-            FileFetcher fileFetcher,
-            Authority authority,
-            VideoClickMapper videoClickMapper
-    ) {
+    private JoinInternEnvironment joinInternEnvironment;
+
+
+    public VideoController(VideoMapper videoMapper, FileService fileService, Authority authority, VideoClickMapper videoClickMapper, JoinInternEnvironment joinInternEnvironment) {
         this.videoMapper = videoMapper;
-        this.fileFetcher = fileFetcher;
+        this.fileService = fileService;
         this.authority = authority;
         this.videoClickMapper = videoClickMapper;
+        this.joinInternEnvironment = joinInternEnvironment;
+    }
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.POST, path = "/query")
+    Video query(
+            @RequestParam Integer videoId
+    ) {
+        Optional<Video> video = this.videoMapper.selectOne(c -> c.where(VideoDynamicSqlSupport.videoId, isEqualTo(videoId)));
+        return video.orElse(null);
+    }
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.POST, path = "/delete")
+    boolean delete(
+            @RequestParam String uid,
+            @RequestParam Integer id
+    ) {
+        if (!this.authority.checkAdmin(uid)) return false;
+        Optional<Video> video = this.videoMapper.selectOne(
+                c -> c.where(VideoDynamicSqlSupport.videoId, isEqualTo(id))
+        );
+        if (!video.isPresent()) return false;
+        this.fileService.deleteFile(video.get().getVideoPath());
+        int n = this.videoMapper.delete(
+                c -> c.where(VideoDynamicSqlSupport.videoId, isEqualTo(id))
+        );
+        if (n > 0) log.info(String.format("Video %d with path %s is deleted", id, video.get().getVideoPath()));
+        return n > 0;
     }
 
     @ResponseBody
@@ -50,41 +79,56 @@ public class VideoController {
     @RequestMapping(method = RequestMethod.POST, path = "/test")
     void testFetch(@RequestParam String url) {
         String[] strings = url.split("/");
-        this.fileFetcher.getFile(url, "test", strings[strings.length - 1]);
+
+        this.fileService.getFile(url, "test", strings[strings.length - 1]);
     }
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.POST, path = "/upload")
-    void uploadVideo(
-            @RequestParam String url,
+    boolean uploadVideo(
+            @RequestParam MultipartFile file,
+            @RequestParam(required = false) String videoTitle,
             @RequestParam(required = false) String videoDescription,
             @RequestParam(required = false) String userId
     ) {
-        String[] strings = url.split("/");
-        String path = this.fileFetcher.getFile(url, "video", strings[strings.length - 1]);
+
+        String dir = "media/";
+        if (!this.joinInternEnvironment.isProd()) dir += "dev/";
+        dir += "video/";
+        String path = this.fileService.saveFile(dir, file);
 
         Video video = new Video();
+        video.setVideoTitle(videoTitle);
         video.setVideoDescription(videoDescription);
         video.setVideoPath(path);
         video.setChecked("unchecked");
         video.setPosterId(userId);
         video.setPostDate(new Date());
 
-        this.videoMapper.insert(video);
+        int n = this.videoMapper.insert(video);
+        if (n > 0) log.info(String.format("Video %d is uploaded with path %s", video.getVideoId(), video.getVideoPath()));
+        return n > 0;
     }
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.POST, path = "/update")
     boolean updateVideo(
             @RequestParam Integer id,
+            @RequestParam(required = false) String videoTitle,
             @RequestParam(required = false) String videoDescription,
             @RequestParam String user_id
     ) {
         Optional<Video> video = this.videoMapper.selectOne(c -> c.where(VideoDynamicSqlSupport.videoId, isEqualTo(id)));
         if (!video.isPresent()) return false;
         if (!video.get().getPosterId().equals(user_id) && !this.authority.checkAdmin(user_id)) return false;
-        this.videoMapper.update(c -> c.set(VideoDynamicSqlSupport.videoDescription).equalToWhenPresent(videoDescription));
-        return true;
+        int n = this.videoMapper.update(c ->
+                c.set(VideoDynamicSqlSupport.videoDescription)
+                        .equalToWhenPresent(videoDescription)
+                .set(VideoDynamicSqlSupport.videoTitle)
+                .equalToWhenPresent(videoTitle)
+        );
+        if (n > 0) log.info(String.format("String video %d is updated", id));
+        return n > 0;
     }
 
     @ResponseBody

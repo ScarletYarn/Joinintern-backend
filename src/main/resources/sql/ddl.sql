@@ -40,6 +40,7 @@ CREATE TABLE message (
 
 CREATE TABLE post (
     post_id INTEGER PRIMARY KEY AUTO_INCREMENT ,
+    post_title VARCHAR (200) ,
     -- in month
     duration INTEGER ,
     location VARCHAR (500) ,
@@ -62,6 +63,7 @@ CREATE TABLE label (
 
 CREATE TABLE video (
     video_id INTEGER PRIMARY KEY AUTO_INCREMENT ,
+    video_title VARCHAR (200) ,
     video_description VARCHAR (500) ,
     video_path VARCHAR (1000) ,
     -- pass, unchecked, reject

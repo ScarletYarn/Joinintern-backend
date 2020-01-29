@@ -52,7 +52,7 @@ public class LabelController {
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, path = "/get-post")
-    List<Label> getLabels(@RequestParam Integer id) {
+    List<Label> getPostLabels(@RequestParam Integer id) {
         SelectStatementProvider selectStatement = selectDistinct(
                 LabelDynamicSqlSupport.labelContent
         )

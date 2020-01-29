@@ -5,7 +5,8 @@ import com.joininterngroup.joinintern.helpers.UserEssential;
 import com.joininterngroup.joinintern.mapper.MessageDynamicSqlSupport;
 import com.joininterngroup.joinintern.mapper.MessageMapper;
 import com.joininterngroup.joinintern.model.Message;
-import com.joininterngroup.joinintern.utils.FileFetcher;
+import com.joininterngroup.joinintern.utils.FileService;
+import com.joininterngroup.joinintern.utils.JoinInternEnvironment;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,19 +36,18 @@ public class ChatController {
 
     private MessageMapper messageMapper;
 
-    private FileFetcher fileFetcher;
+    private FileService fileService;
+
+    private JoinInternEnvironment joinInternEnvironment;
 
     @Value("${joinintern.maxChatBufferLen}")
     private Integer maxChatBufferLen;
 
-    public ChatController(
-            UserController userController,
-            MessageMapper messageMapper,
-            FileFetcher fileFetcher
-    ) {
+    public ChatController(UserController userController, MessageMapper messageMapper, FileService fileService, JoinInternEnvironment joinInternEnvironment) {
         this.userController = userController;
         this.messageMapper = messageMapper;
-        this.fileFetcher = fileFetcher;
+        this.fileService = fileService;
+        this.joinInternEnvironment = joinInternEnvironment;
     }
 
     @OnOpen
@@ -74,8 +74,11 @@ public class ChatController {
     ) {
         String[] strings = url.split("/");
         String bin = null;
+        String dir = "media/";
+        if (!this.joinInternEnvironment.isProd()) dir += "dev";
+        dir += "chat/";
         if (!url.equals("")) {
-            bin = this.fileFetcher.getFile(url, String.format("%s/%s", "chat", this.uid), strings[strings.length - 1]);
+            bin = this.fileService.getFile(url, String.format("%s/%s", dir, this.uid), strings[strings.length - 1]);
         }
         Message message = new Message();
         message.setHasRead(false);
