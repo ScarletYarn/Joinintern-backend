@@ -34,11 +34,11 @@
         <table tableName="video">
             <generatedKey column="video_id" sqlStatement="JDBC" />
         </table>
-        <table tableName="video_click">
-            <generatedKey column="video_click_id" sqlStatement="JDBC" />
+        <table tableName="video_hit">
+            <generatedKey column="video_hit_id" sqlStatement="JDBC" />
         </table>
-        <table tableName="post_click">
-            <generatedKey column="post_click_id" sqlStatement="JDBC" />
+        <table tableName="post_hit">
+            <generatedKey column="post_hit_id" sqlStatement="JDBC" />
         </table>
         <table tableName="post_label" />
         <table tableName="post_major" />

@@ -4,8 +4,8 @@ USE joinintern_dev;
 DROP TABLE IF EXISTS post_label;
 DROP TABLE IF EXISTS post_major;
 -- These are for the entity.
-DROP TABLE IF EXISTS post_click;
-DROP TABLE IF EXISTS video_click;
+DROP TABLE IF EXISTS post_hit;
+DROP TABLE IF EXISTS video_hit;
 DROP TABLE IF EXISTS video;
 DROP TABLE IF EXISTS label;
 DROP TABLE IF EXISTS post;

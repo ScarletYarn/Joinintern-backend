@@ -1,4 +1,4 @@
-INSERT INTO my_user(user_id, gender, level, major, card_photo_path, checked, user_identity, nickname, avatar, enterprise_type_id) VALUES
+INSERT INTO my_user(user_id, gender, level, major, card_photo_path, validation, user_identity, nickname, avatar, enterprise_type_id) VALUES
 ('openid_1', 'male', 2017, 1, '/joinintern/media-dev/card/1.png', 'pass', 'stu', '力大猪飞', '#', 1),
 ('openid_2', 'female', 2017, 1, '/joinintern/media-dev/card/2.png', 'pass', 'stu', '两千万', '#', 1),
 ('openid_3', 'male', 2017, 2, '/joinintern/media-dev/card/3.png', 'pass', 'stu', '神秘用户', '#', 2),
@@ -17,18 +17,18 @@ INSERT INTO post(post_title, duration, location, distanceZB, distanceMH, post_co
 ('程序员3', 80, '金沙江路996号', 2, 2.0, '招聘程序员一名', false, '2020-2-2', 'openid_3', '2020-1-1', '2020-2-2'),
 ('程序员4', 20, '金沙江路251号', 3.1, 3.3, '招聘程序员一名', true, '2020-3-1', 'openid_4', '2020-3-1', '2020-3-3');
 
-INSERT INTO video(video_title, video_description, video_path, checked, poster_id, checker_id, post_date, check_date) VALUES
+INSERT INTO video(video_title, video_description, video_path, validation, poster_id, checker_id, post_date, check_date) VALUES
 ('金沙江路招聘挖路员', '金沙江路招聘挖路员视频', '/joinintern/media-dev/video/1.mp4', true, 'openid_1', 'openid_4', '2020-1-1', '2020-2-1'),
 ('金沙江路招聘管道工', '金沙江路招聘管道工视频', '/joinintern/media-dev/video/2.mp4', true, 'openid_2', 'openid_4', '2020-1-10', '2020-1-2'),
 ('金沙江路招聘勘探员', '金沙江路招聘勘探员视频', '/joinintern/media-dev/video/3.mp4', false, 'openid_3', null, '2020-1-1', '2020-1-1'),
 ('金沙江路招聘监工', '金沙江路招聘监工视频', '/joinintern/media-dev/video/4.mp4', true, 'openid_1', 'openid_4', '2020-1-20', '2020-1-21');
 
-INSERT INTO video_click(video_click_time, clicker_id, video_id) VALUES
+INSERT INTO video_hit(video_hit_time, hitter_id, video_id) VALUES
 ('2020-1-1', 'openid_1', 1),
 ('2020-1-1', 'openid_2', 3),
 ('2020-1-1', 'openid_3', 2);
 
-INSERT INTO post_click(post_click_time, clicker_id, post_id) VALUES
+INSERT INTO post_hit(post_hit_time, hitter_id, post_id) VALUES
 ('2020-1-10', 'openid_1', 2),
 ('2020-1-11', 'openid_3', 3),
 ('2020-1-15', 'openid_2', 1),

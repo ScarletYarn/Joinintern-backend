@@ -16,7 +16,7 @@ CREATE TABLE my_user (
     major INTEGER ,
     card_photo_path VARCHAR (300) ,
     -- pass, unchecked, reject
-    checked VARCHAR (100) ,
+    validation VARCHAR (100) ,
     -- stu for plain user, admin for administrator
     user_identity VARCHAR (10) ,
     nickname VARCHAR (50) ,
@@ -67,7 +67,7 @@ CREATE TABLE video (
     video_description VARCHAR (500) ,
     video_path VARCHAR (1000) ,
     -- pass, unchecked, reject
-    checked VARCHAR (100) ,
+    validation VARCHAR (100) ,
     poster_id VARCHAR (100) ,
     checker_id VARCHAR (100) ,
     post_date DATE ,
@@ -76,21 +76,21 @@ CREATE TABLE video (
     FOREIGN KEY(checker_id) REFERENCES my_user(user_id)
 );
 
-CREATE TABLE video_click (
-    video_click_id INTEGER PRIMARY KEY AUTO_INCREMENT ,
-    video_click_time DATE ,
-    clicker_id VARCHAR (100) ,
+CREATE TABLE video_hit (
+    video_hit_id INTEGER PRIMARY KEY AUTO_INCREMENT ,
+    video_hit_time DATE ,
+    hitter_id VARCHAR (100) ,
     video_id INTEGER ,
-    FOREIGN KEY(clicker_id) REFERENCES my_user(user_id) ,
+    FOREIGN KEY(hitter_id) REFERENCES my_user(user_id) ,
     FOREIGN KEY(video_id) REFERENCES video(video_id)
 );
 
-CREATE TABLE post_click (
-    post_click_id INTEGER PRIMARY KEY AUTO_INCREMENT ,
-    post_click_time DATE ,
-    clicker_id VARCHAR (100) ,
+CREATE TABLE post_hit (
+    post_hit_id INTEGER PRIMARY KEY AUTO_INCREMENT ,
+    post_hit_time DATE ,
+    hitter_id VARCHAR (100) ,
     post_id INTEGER ,
-    FOREIGN KEY(clicker_id) REFERENCES my_user(user_id) ,
+    FOREIGN KEY(hitter_id) REFERENCES my_user(user_id) ,
     FOREIGN KEY(post_id) REFERENCES post(post_id)
 );
 

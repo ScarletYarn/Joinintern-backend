@@ -110,7 +110,7 @@ public class UserController {
         if (level != null) myUser.setLevel(level);
         if (major != null) myUser.setMajor(major);
         if (cardPhotoPath != null) myUser.setCardPhotoPath(cardPhotoPath);
-        myUser.setChecked("unchecked");
+        myUser.setValidation("unchecked");
         myUser.setUserIdentity("stu");
         if (nickname != null) myUser.setNickname(nickname);
         if (avatar != null) myUser.setAvatar(avatar);
@@ -128,7 +128,7 @@ public class UserController {
      */
     @ResponseBody
     @RequestMapping(method = RequestMethod.POST, path = "/check")
-    boolean checkUser(
+    boolean validateUser(
             @RequestParam String id,
             @RequestParam String op
     ) {
@@ -138,12 +138,12 @@ public class UserController {
 
         if (res.isPresent()) {
             if (op.equals("pass")) {
-                this.myUserMapper.update(c -> c.set(MyUserDynamicSqlSupport.checked).equalTo("pass")
+                this.myUserMapper.update(c -> c.set(MyUserDynamicSqlSupport.validation).equalTo("pass")
                         .where(MyUserDynamicSqlSupport.userId, isEqualTo(id)));
                 return true;
             }
             else if (op.equals("reject")) {
-                this.myUserMapper.update(c -> c.set(MyUserDynamicSqlSupport.checked).equalTo("reject")
+                this.myUserMapper.update(c -> c.set(MyUserDynamicSqlSupport.validation).equalTo("reject")
                         .where(MyUserDynamicSqlSupport.userId, isEqualTo(id)));
                 return true;
             } else {

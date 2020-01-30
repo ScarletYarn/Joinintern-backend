@@ -1,10 +1,10 @@
 package com.joininterngroup.joinintern.controller;
 
-import com.joininterngroup.joinintern.mapper.VideoClickMapper;
+import com.joininterngroup.joinintern.mapper.VideoHitMapper;
 import com.joininterngroup.joinintern.mapper.VideoDynamicSqlSupport;
 import com.joininterngroup.joinintern.mapper.VideoMapper;
 import com.joininterngroup.joinintern.model.Video;
-import com.joininterngroup.joinintern.model.VideoClick;
+import com.joininterngroup.joinintern.model.VideoHit;
 import com.joininterngroup.joinintern.utils.Authority;
 import com.joininterngroup.joinintern.utils.FileService;
 import com.joininterngroup.joinintern.utils.JoinInternEnvironment;
@@ -29,16 +29,16 @@ public class VideoController {
 
     private Authority authority;
 
-    private VideoClickMapper videoClickMapper;
+    private VideoHitMapper videoHitMapper;
 
     private JoinInternEnvironment joinInternEnvironment;
 
 
-    public VideoController(VideoMapper videoMapper, FileService fileService, Authority authority, VideoClickMapper videoClickMapper, JoinInternEnvironment joinInternEnvironment) {
+    public VideoController(VideoMapper videoMapper, FileService fileService, Authority authority, VideoHitMapper videoHitMapper, JoinInternEnvironment joinInternEnvironment) {
         this.videoMapper = videoMapper;
         this.fileService = fileService;
         this.authority = authority;
-        this.videoClickMapper = videoClickMapper;
+        this.videoHitMapper = videoHitMapper;
         this.joinInternEnvironment = joinInternEnvironment;
     }
 
@@ -101,7 +101,7 @@ public class VideoController {
         video.setVideoTitle(videoTitle);
         video.setVideoDescription(videoDescription);
         video.setVideoPath(path);
-        video.setChecked("unchecked");
+        video.setValidation("unchecked");
         video.setPosterId(userId);
         video.setPostDate(new Date());
 
@@ -133,14 +133,14 @@ public class VideoController {
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.POST, path = "/check")
-    boolean checkVideo(
+    boolean validateVideo(
             @RequestParam String user_id,
             @RequestParam Integer id,
             @RequestParam Boolean pass
     ) {
         String status = pass ? "pass" : "reject";
         if (!this.authority.checkAdmin(user_id)) return false;
-        this.videoMapper.update(c -> c.set(VideoDynamicSqlSupport.checked)
+        this.videoMapper.update(c -> c.set(VideoDynamicSqlSupport.validation)
                 .equalTo(status)
                 .set(VideoDynamicSqlSupport.checkerId)
                 .equalTo(user_id)
@@ -153,17 +153,17 @@ public class VideoController {
     }
 
     @RequestMapping(method = RequestMethod.POST, path = "/click")
-    void clickVideo(
+    void hitVideo(
             @RequestParam String user_id,
             @RequestParam Integer id
     ) {
-        VideoClick videoClick = new VideoClick();
+        VideoHit videoClick = new VideoHit();
 
-        videoClick.setClickerId(user_id);
-        videoClick.setVideoClickTime(new Date());
+        videoClick.setHitterId(user_id);
+        videoClick.setVideoHitTime(new Date());
         videoClick.setVideoId(id);
 
-        this.videoClickMapper.insert(videoClick);
+        this.videoHitMapper.insert(videoClick);
     }
 
     @ResponseBody
@@ -171,6 +171,6 @@ public class VideoController {
     Long getHits(
             @RequestParam Integer videoId
     ) {
-        return this.videoClickMapper.count(c -> c.where(VideoDynamicSqlSupport.videoId, isEqualTo(videoId)));
+        return this.videoHitMapper.count(c -> c.where(VideoDynamicSqlSupport.videoId, isEqualTo(videoId)));
     }
 }

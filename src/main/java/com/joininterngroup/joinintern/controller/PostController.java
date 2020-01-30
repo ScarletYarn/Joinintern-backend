@@ -3,7 +3,7 @@ package com.joininterngroup.joinintern.controller;
 import com.joininterngroup.joinintern.helpers.PostFilterObject;
 import com.joininterngroup.joinintern.mapper.PostMapper;
 import com.joininterngroup.joinintern.model.Post;
-import com.joininterngroup.joinintern.model.PostClick;
+import com.joininterngroup.joinintern.model.PostHit;
 import com.joininterngroup.joinintern.utils.Authority;
 import lombok.extern.slf4j.Slf4j;
 import org.mybatis.dynamic.sql.render.RenderingStrategies;
@@ -26,16 +26,16 @@ public class PostController {
 
     private Authority authority;
 
-    private PostClickMapper postClickMapper;
+    private PostHitMapper postHitMapper;
 
     public PostController(
             PostMapper postMapper,
             Authority authority,
-            PostClickMapper postClickMapper
+            PostHitMapper postHitMapper
     ) {
         this.postMapper = postMapper;
         this.authority = authority;
-        this.postClickMapper = postClickMapper;
+        this.postHitMapper = postHitMapper;
     }
 
     @ResponseBody
@@ -183,17 +183,17 @@ public class PostController {
     }
 
     @RequestMapping(method = RequestMethod.POST, path = "/click")
-    void clickPost(
+    void hitPost(
             @RequestParam String user_id,
             @RequestParam Integer postId
     ) {
-        PostClick postClick = new PostClick();
+        PostHit postHit = new PostHit();
 
-        postClick.setClickerId(user_id);
-        postClick.setPostId(postId);
-        postClick.setPostClickTime(new Date());
+        postHit.setHitterId(user_id);
+        postHit.setPostId(postId);
+        postHit.setPostHitTime(new Date());
 
-        this.postClickMapper.insert(postClick);
+        this.postHitMapper.insert(postHit);
     }
 
     @ResponseBody
@@ -201,6 +201,6 @@ public class PostController {
     Long getHits(
             @RequestParam Integer postId
     ) {
-        return this.postClickMapper.count(c -> c.where(PostDynamicSqlSupport.postId, isEqualTo(postId)));
+        return this.postHitMapper.count(c -> c.where(PostDynamicSqlSupport.postId, isEqualTo(postId)));
     }
 }
