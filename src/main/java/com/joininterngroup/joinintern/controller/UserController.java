@@ -121,13 +121,13 @@ public class UserController {
     }
 
     /**
-     * Check the registration.
+     * validate the registration.
      * @param id The open id of the user to be checked.
      * @param op The check operation: pass or reject.
      * @return whether success or not.
      */
     @ResponseBody
-    @RequestMapping(method = RequestMethod.POST, path = "/check")
+    @RequestMapping(method = RequestMethod.POST, path = "/validate")
     boolean validateUser(
             @RequestParam String id,
             @RequestParam String op

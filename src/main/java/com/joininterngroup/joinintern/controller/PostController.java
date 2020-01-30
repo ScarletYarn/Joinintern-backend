@@ -182,7 +182,7 @@ public class PostController {
         return n > 0;
     }
 
-    @RequestMapping(method = RequestMethod.POST, path = "/click")
+    @RequestMapping(method = RequestMethod.POST, path = "/hit")
     void hitPost(
             @RequestParam String user_id,
             @RequestParam Integer postId

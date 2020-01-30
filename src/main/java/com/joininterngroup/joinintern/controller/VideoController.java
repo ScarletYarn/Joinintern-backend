@@ -132,7 +132,7 @@ public class VideoController {
     }
 
     @ResponseBody
-    @RequestMapping(method = RequestMethod.POST, path = "/check")
+    @RequestMapping(method = RequestMethod.POST, path = "/validate")
     boolean validateVideo(
             @RequestParam String user_id,
             @RequestParam Integer id,
@@ -152,7 +152,7 @@ public class VideoController {
         return true;
     }
 
-    @RequestMapping(method = RequestMethod.POST, path = "/click")
+    @RequestMapping(method = RequestMethod.POST, path = "/hit")
     void hitVideo(
             @RequestParam String user_id,
             @RequestParam Integer id
