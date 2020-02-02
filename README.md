@@ -13,3 +13,4 @@ The static path is /root/joinintern/public/
 ##### 0.1.0: Added support for online chat.
 ##### 0.1.1: Added title for post and video, replaced media path with base path, added query method for video, added filtering rule for post.
 ##### 0.1.2: Added the query method for post, added delete method for post and video, changed the file upload API, adjusted the date format.
+##### 0.2.0: Fixed typos in validation, added support for file upload, set the constraint of file size, changed the static file location, added student ID for user.

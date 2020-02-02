@@ -2,8 +2,7 @@ package com.joininterngroup.joinintern.controller;
 
 import com.joininterngroup.joinintern.helpers.PostFilterObject;
 import com.joininterngroup.joinintern.mapper.PostMapper;
-import com.joininterngroup.joinintern.model.Post;
-import com.joininterngroup.joinintern.model.PostHit;
+import com.joininterngroup.joinintern.model.*;
 import com.joininterngroup.joinintern.utils.Authority;
 import lombok.extern.slf4j.Slf4j;
 import org.mybatis.dynamic.sql.render.RenderingStrategies;
@@ -28,14 +27,30 @@ public class PostController {
 
     private PostHitMapper postHitMapper;
 
+    private MajorMapper majorMapper;
+
+    private LabelMapper labelMapper;
+
+    private PostLabelMapper postLabelMapper;
+
+    private PostMajorMapper postMajorMapper;
+
     public PostController(
             PostMapper postMapper,
             Authority authority,
-            PostHitMapper postHitMapper
+            PostHitMapper postHitMapper,
+            MajorMapper majorMapper,
+            LabelMapper labelMapper,
+            PostLabelMapper postLabelMapper,
+            PostMajorMapper postMajorMapper
     ) {
         this.postMapper = postMapper;
         this.authority = authority;
         this.postHitMapper = postHitMapper;
+        this.majorMapper = majorMapper;
+        this.labelMapper = labelMapper;
+        this.postLabelMapper = postLabelMapper;
+        this.postMajorMapper = postMajorMapper;
     }
 
     @ResponseBody
@@ -93,6 +108,7 @@ public class PostController {
         post.setAuthorId(authorId);
         if (startTime != null) post.setStartTime(startTime);
         if (endTime != null) post.setEndTime(endTime);
+        post.setPostDate(new Date());
         int n = this.postMapper.insert(post);
         if (n > 0) log.info(String.format("Post with id %d is created", post.getPostId()));
         return n > 0;
@@ -128,6 +144,73 @@ public class PostController {
                 .render(RenderingStrategies.MYBATIS3);
 
         return this.postMapper.selectMany(selectStatement);
+    }
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.POST, path = "/majors")
+    List<Major> getMajors(
+            @RequestParam Integer id
+    ) {
+        SelectStatementProvider selectStatementProvider = selectDistinct(
+                MajorDynamicSqlSupport.majorId,
+                MajorDynamicSqlSupport.majorName
+        )
+                .from(PostDynamicSqlSupport.post)
+                .join(PostMajorDynamicSqlSupport.postMajor)
+                .on(PostDynamicSqlSupport.postId, equalTo(PostMajorDynamicSqlSupport.postId))
+                .join(MajorDynamicSqlSupport.major)
+                .on(PostMajorDynamicSqlSupport.majorId, equalTo(MajorDynamicSqlSupport.majorId))
+                .where(PostDynamicSqlSupport.postId, isEqualTo(id))
+                .build()
+                .render(RenderingStrategies.MYBATIS3);
+
+        return this.majorMapper.selectMany(selectStatementProvider);
+    }
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.POST, path = "/labels")
+    List<Label> getLabels(
+            @RequestParam Integer id
+    ) {
+        SelectStatementProvider selectStatementProvider = selectDistinct(
+                LabelDynamicSqlSupport.labelId,
+                LabelDynamicSqlSupport.labelContent
+        )
+                .from(PostDynamicSqlSupport.post)
+                .join(PostLabelDynamicSqlSupport.postLabel)
+                .on(PostDynamicSqlSupport.postId, equalTo(PostLabelDynamicSqlSupport.postId))
+                .join(LabelDynamicSqlSupport.label)
+                .on(PostLabelDynamicSqlSupport.labelId, equalTo(LabelDynamicSqlSupport.labelId))
+                .where(PostDynamicSqlSupport.postId, isEqualTo(id))
+                .build()
+                .render(RenderingStrategies.MYBATIS3);
+        return this.labelMapper.selectMany(selectStatementProvider);
+    }
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.POST, path = "/label/add")
+    boolean addLabel(
+            @RequestParam Integer labelId,
+            @RequestParam Integer postId
+    ) {
+        PostLabel postLabel = new PostLabel();
+        postLabel.setLabelId(labelId);
+        postLabel.setPostId(postId);
+        int n = this.postLabelMapper.insert(postLabel);
+        return n > 0;
+    }
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.POST, path = "/major/add")
+    boolean addMajor(
+            @RequestParam Integer postId,
+            @RequestParam Integer majorId
+    ) {
+        PostMajor postMajor = new PostMajor();
+        postMajor.setMajorId(majorId);
+        postMajor.setPostId(postId);
+        int n = this.postMajorMapper.insert(postMajor);
+        return n > 0;
     }
 
     @RequestMapping(method = RequestMethod.POST, path = "/update")
@@ -174,7 +257,9 @@ public class PostController {
     }
 
     @RequestMapping(method = RequestMethod.POST, path = "/complete")
-    boolean completePost(@RequestParam Integer id) {
+    boolean completePost(
+            @RequestParam Integer id
+    ) {
         int n = this.postMapper.update(c -> c.set(PostDynamicSqlSupport.completed)
                 .equalTo(true)
                 .where(PostDynamicSqlSupport.postId, isEqualTo(id)));

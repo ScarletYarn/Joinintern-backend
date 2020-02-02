@@ -1,5 +1,6 @@
 package com.joininterngroup.joinintern.controller;
 
+import com.joininterngroup.joinintern.mapper.EnterpriseTypeDynamicSqlSupport;
 import com.joininterngroup.joinintern.mapper.EnterpriseTypeMapper;
 import com.joininterngroup.joinintern.model.EnterpriseType;
 import com.joininterngroup.joinintern.utils.Authority;
@@ -28,7 +29,7 @@ public class EnterpriseTypeController {
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, path = "/get")
     List<EnterpriseType> getAllType() {
-        return this.enterpriseTypeMapper.select(c -> c);
+        return this.enterpriseTypeMapper.select(c -> c.orderBy(EnterpriseTypeDynamicSqlSupport.enterpriseTypeId));
     }
 
     @ResponseBody

@@ -51,9 +51,19 @@ public class UserController {
         if (!user.isPresent()) return null;
         UserEssential userEssential = new UserEssential();
         userEssential.setUserId(user_id);
-        userEssential.setNickname(user.get().getUserId());
+        userEssential.setNickname(user.get().getNickname());
         userEssential.setAvatar(user.get().getAvatar());
         return userEssential;
+    }
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.POST, path = "/find")
+    MyUser find(
+            @RequestParam String uid
+    ) {
+        Optional<MyUser> user = this.myUserMapper.selectOne(c ->
+                c.where(MyUserDynamicSqlSupport.userId, isEqualTo(uid)));
+        return user.orElse(null);
     }
 
     @ResponseBody
@@ -96,6 +106,7 @@ public class UserController {
     @RequestMapping(method = RequestMethod.POST, path = "/register")
     String register(
             @RequestParam String code,
+            @RequestParam String stuId,
             @RequestParam(required = false) String gender,
             @RequestParam(required = false) Integer level,
             @RequestParam(required = false) Integer major,
@@ -106,11 +117,12 @@ public class UserController {
     ) {
         String openid = this.weixinController.getOpenid(code);
         MyUser myUser = new MyUser();
+        myUser.setStudentId(stuId);
         if (gender != null) myUser.setGender(gender);
         if (level != null) myUser.setLevel(level);
         if (major != null) myUser.setMajor(major);
         if (cardPhotoPath != null) myUser.setCardPhotoPath(cardPhotoPath);
-        myUser.setValidation("unchecked");
+        myUser.setValidation("unvalidated");
         myUser.setUserIdentity("stu");
         if (nickname != null) myUser.setNickname(nickname);
         if (avatar != null) myUser.setAvatar(avatar);
@@ -122,7 +134,7 @@ public class UserController {
 
     /**
      * validate the registration.
-     * @param id The open id of the user to be checked.
+     * @param id The open id of the user to be validated.
      * @param op The check operation: pass or reject.
      * @return whether success or not.
      */
@@ -137,13 +149,13 @@ public class UserController {
                 c.where(MyUserDynamicSqlSupport.userId, isEqualTo(id)));
 
         if (res.isPresent()) {
-            if (op.equals("pass")) {
-                this.myUserMapper.update(c -> c.set(MyUserDynamicSqlSupport.validation).equalTo("pass")
+            if (op.equals("validate")) {
+                this.myUserMapper.update(c -> c.set(MyUserDynamicSqlSupport.validation).equalTo("validate")
                         .where(MyUserDynamicSqlSupport.userId, isEqualTo(id)));
                 return true;
             }
-            else if (op.equals("reject")) {
-                this.myUserMapper.update(c -> c.set(MyUserDynamicSqlSupport.validation).equalTo("reject")
+            else if (op.equals("invalidate")) {
+                this.myUserMapper.update(c -> c.set(MyUserDynamicSqlSupport.validation).equalTo("invalidate")
                         .where(MyUserDynamicSqlSupport.userId, isEqualTo(id)));
                 return true;
             } else {

@@ -101,7 +101,7 @@ public class VideoController {
         video.setVideoTitle(videoTitle);
         video.setVideoDescription(videoDescription);
         video.setVideoPath(path);
-        video.setValidation("unchecked");
+        video.setValidation("unvalidated");
         video.setPosterId(userId);
         video.setPostDate(new Date());
 
@@ -138,13 +138,13 @@ public class VideoController {
             @RequestParam Integer id,
             @RequestParam Boolean pass
     ) {
-        String status = pass ? "pass" : "reject";
+        String status = pass ? "validate" : "invalidate";
         if (!this.authority.checkAdmin(user_id)) return false;
         this.videoMapper.update(c -> c.set(VideoDynamicSqlSupport.validation)
                 .equalTo(status)
-                .set(VideoDynamicSqlSupport.checkerId)
+                .set(VideoDynamicSqlSupport.validatorId)
                 .equalTo(user_id)
-                .set(VideoDynamicSqlSupport.checkDate)
+                .set(VideoDynamicSqlSupport.validateDate)
                 .equalTo(new Date())
                 .where(VideoDynamicSqlSupport.videoId, isEqualTo(id))
         );

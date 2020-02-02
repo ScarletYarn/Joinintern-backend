@@ -1,5 +1,6 @@
 package com.joininterngroup.joinintern.controller;
 
+import com.joininterngroup.joinintern.mapper.MajorDynamicSqlSupport;
 import com.joininterngroup.joinintern.mapper.MajorMapper;
 import com.joininterngroup.joinintern.model.*;
 import com.joininterngroup.joinintern.utils.Authority;
@@ -28,7 +29,7 @@ public class MajorController {
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, path = "/get")
     List<Major> getAllMajor() {
-        return this.majorMapper.select(c -> c);
+        return this.majorMapper.select(c -> c.orderBy(MajorDynamicSqlSupport.majorId));
     }
 
     @ResponseBody

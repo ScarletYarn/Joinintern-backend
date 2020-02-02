@@ -15,13 +15,14 @@ CREATE TABLE my_user (
     level INTEGER ,
     major INTEGER ,
     card_photo_path VARCHAR (300) ,
-    -- pass, unchecked, reject
+    -- validate, unvalidated, invalidate
     validation VARCHAR (100) ,
     -- stu for plain user, admin for administrator
     user_identity VARCHAR (10) ,
     nickname VARCHAR (50) ,
-    avatar VARCHAR (200) ,
+    avatar VARCHAR (300) ,
     enterprise_type_id INTEGER ,
+    student_id VARCHAR(20) UNICODE ,
     FOREIGN KEY(enterprise_type_id) REFERENCES enterprise_type(enterprise_type_id) ,
     FOREIGN KEY(major) REFERENCES major(major_id)
 );
@@ -53,6 +54,7 @@ CREATE TABLE post (
     author_id VARCHAR (100) ,
     start_time DATE ,
     end_time DATE ,
+    post_date DATE ,
     FOREIGN KEY(author_id) REFERENCES my_user(user_id)
 );
 
@@ -66,14 +68,14 @@ CREATE TABLE video (
     video_title VARCHAR (200) ,
     video_description VARCHAR (500) ,
     video_path VARCHAR (1000) ,
-    -- pass, unchecked, reject
+    -- validate, unvalidated, invalidate
     validation VARCHAR (100) ,
     poster_id VARCHAR (100) ,
-    checker_id VARCHAR (100) ,
+    validator_id VARCHAR (100) ,
     post_date DATE ,
-    check_date DATE ,
+    validate_date DATE ,
     FOREIGN KEY(poster_id) REFERENCES my_user(user_id) ,
-    FOREIGN KEY(checker_id) REFERENCES my_user(user_id)
+    FOREIGN KEY(validator_id) REFERENCES my_user(user_id)
 );
 
 CREATE TABLE video_hit (

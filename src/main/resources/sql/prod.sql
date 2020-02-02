@@ -15,7 +15,7 @@ CREATE TABLE my_user (
     level INTEGER ,
     major INTEGER ,
     card_photo_path VARCHAR (300) ,
-    -- pass, unchecked, reject
+    -- validate, unvalidated, invalidate
     checked VARCHAR (100) ,
     -- stu for plain user, admin for administrator
     user_identity VARCHAR (10) ,
