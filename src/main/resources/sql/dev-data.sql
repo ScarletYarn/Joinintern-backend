@@ -47,7 +47,7 @@ VALUES ('金沙江路招聘挖路员', '金沙江路招聘挖路员视频', 'htt
         '2020-1-10', '2020-1-2'),
        ('金沙江路招聘勘探员', '金沙江路招聘勘探员视频', 'https://media.w3.org/2010/05/sintel/trailer.mp4', 'unvalidated', 'openid_3', null,
         '2020-1-1', '2020-1-1'),
-       ('金沙江路招聘监工', '金沙江路招聘监工视频', 'mhttp://mirror.aarnet.edu.au/pub/TED-talks/911Mothers_2010W-480p.mp4', 'unvalidated',
+       ('金沙江路招聘监工', '金沙江路招聘监工视频', 'http://mirror.aarnet.edu.au/pub/TED-talks/911Mothers_2010W-480p.mp4', 'unvalidated',
         'openid_1', 'openid_4', '2020-1-20', '2020-1-21');
 
 INSERT INTO video_hit(video_hit_time, hitter_id, video_id)

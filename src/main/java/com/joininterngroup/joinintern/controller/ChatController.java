@@ -100,7 +100,7 @@ public class ChatController {
     }
 
     @ResponseBody
-    @RequestMapping("/status")
+    @RequestMapping(method = RequestMethod.POST, path = "/status")
     public boolean status(
             @RequestParam String uid
     ) {

@@ -87,6 +87,7 @@ public class VideoController {
     @RequestMapping(method = RequestMethod.POST, path = "/upload")
     boolean uploadVideo(
             @RequestParam MultipartFile file,
+            @RequestParam MultipartFile thumb,
             @RequestParam(required = false) String videoTitle,
             @RequestParam(required = false) String videoDescription,
             @RequestParam(required = false) String userId
@@ -94,13 +95,14 @@ public class VideoController {
 
         String dir = "media/";
         if (!this.joinInternEnvironment.isProd()) dir += "dev/";
-        dir += "video/";
-        String path = this.fileService.saveFile(dir, file);
+        String path = this.fileService.saveFile(dir + "video/", file);
+        String thumbPath = this.fileService.saveFile(dir + "thumb/", thumb);
 
         Video video = new Video();
         video.setVideoTitle(videoTitle);
         video.setVideoDescription(videoDescription);
         video.setVideoPath(path);
+        video.setVideoThumb(thumbPath);
         video.setValidation("unvalidated");
         video.setPosterId(userId);
         video.setPostDate(new Date());

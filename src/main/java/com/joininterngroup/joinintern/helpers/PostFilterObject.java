@@ -12,9 +12,9 @@ public class PostFilterObject {
 
     private List<Integer> majors;
 
-    private float distanceZB;
+    private Float distanceZB;
 
-    private float distanceMH;
+    private Float distanceMH;
 
     public String getTitle() {
         return title;
@@ -48,19 +48,19 @@ public class PostFilterObject {
         this.majors = majors;
     }
 
-    public float getDistanceZB() {
+    public Float getDistanceZB() {
         return distanceZB;
     }
 
-    public void setDistanceZB(float distanceZB) {
+    public void setDistanceZB(Float distanceZB) {
         this.distanceZB = distanceZB;
     }
 
-    public float getDistanceMH() {
+    public Float getDistanceMH() {
         return distanceMH;
     }
 
-    public void setDistanceMH(float distanceMH) {
+    public void setDistanceMH(Float distanceMH) {
         this.distanceMH = distanceMH;
     }
 

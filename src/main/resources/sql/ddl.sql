@@ -17,7 +17,7 @@ CREATE TABLE my_user (
     card_photo_path VARCHAR (300) ,
     -- validate, unvalidated, invalidate
     validation VARCHAR (100) ,
-    -- stu for plain user, admin for administrator
+    -- stu for plain user, admin for administrator, gra for graduated
     user_identity VARCHAR (10) ,
     nickname VARCHAR (50) ,
     avatar VARCHAR (300) ,
@@ -68,6 +68,7 @@ CREATE TABLE video (
     video_title VARCHAR (200) ,
     video_description VARCHAR (500) ,
     video_path VARCHAR (1000) ,
+    video_thumb VARCHAR (1000) ,
     -- validate, unvalidated, invalidate
     validation VARCHAR (100) ,
     poster_id VARCHAR (100) ,
