@@ -42,5 +42,7 @@
         </table>
         <table tableName="post_label" />
         <table tableName="post_major" />
+        <table tableName="user_fav_post" />
+        <table tableName="user_fav_video" />
     </context>
 </generatorConfiguration>

@@ -132,7 +132,9 @@ public class UserController {
             @RequestParam MultipartFile file,
             @RequestParam(required = false) String nickname,
             @RequestParam(required = false) String avatar,
-            @RequestParam(required = false) Integer enterpriseTypeId
+            @RequestParam(required = false) Integer enterpriseTypeId,
+            @RequestParam(required = false) String description,
+            @RequestParam(required = false) Integer type
     ) {
         String dir = "media/";
         if (!this.joinInternEnvironment.isProd()) dir += "dev/";
@@ -145,12 +147,14 @@ public class UserController {
         if (gender != null) myUser.setGender(gender);
         if (level != null) myUser.setLevel(level);
         if (major != null) myUser.setMajor(major);
+        myUser.setEnterpriseTypeId(type);
         if (cardPhotoPath != null) myUser.setCardPhotoPath(cardPhotoPath);
         myUser.setValidation("unvalidated");
         myUser.setUserIdentity("stu");
         if (nickname != null) myUser.setNickname(nickname);
         if (avatar != null) myUser.setAvatar(avatar);
         if (enterpriseTypeId != null) myUser.setEnterpriseTypeId(enterpriseTypeId);
+        myUser.setDescription(description);
         this.myUserMapper.insert(myUser);
         log.info(String.format("User %s registers", myUser.getNickname()));
         return myUser;
@@ -168,7 +172,7 @@ public class UserController {
             @RequestParam String id,
             @RequestParam String op
     ) {
-        if (!this.authority.checkAdmin(id)) return false;
+//        if (!this.authority.checkAdmin(id)) return false;
         Optional<MyUser> res = this.myUserMapper.selectOne(c ->
                 c.where(MyUserDynamicSqlSupport.userId, isEqualTo(id)));
 
@@ -241,5 +245,13 @@ public class UserController {
                 .where(MyUserDynamicSqlSupport.userId, isEqualTo(open_id))
         );
         return n > 0;
+    }
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.POST, path = "/graList")
+    List<MyUser> graList() {
+        return this.myUserMapper.select(c -> c
+                .where(MyUserDynamicSqlSupport.userIdentity, isEqualTo("gra"))
+        );
     }
 }

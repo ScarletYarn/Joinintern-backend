@@ -1,6 +1,5 @@
 package com.joininterngroup.joinintern.controller;
 
-import com.joininterngroup.joinintern.helpers.PostFilterObject;
 import com.joininterngroup.joinintern.mapper.PostMapper;
 import com.joininterngroup.joinintern.model.*;
 import com.joininterngroup.joinintern.utils.Authority;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import com.joininterngroup.joinintern.mapper.*;
 import static org.mybatis.dynamic.sql.SqlBuilder.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +35,10 @@ public class PostController {
 
     private PostMajorMapper postMajorMapper;
 
+    private UserFavPostMapper userFavPostMapper;
+
+    private MyUserMapper myUserMapper;
+
     public PostController(
             PostMapper postMapper,
             Authority authority,
@@ -42,7 +46,9 @@ public class PostController {
             MajorMapper majorMapper,
             LabelMapper labelMapper,
             PostLabelMapper postLabelMapper,
-            PostMajorMapper postMajorMapper
+            PostMajorMapper postMajorMapper,
+            UserFavPostMapper userFavPostMapper,
+            MyUserMapper myUserMapper
     ) {
         this.postMapper = postMapper;
         this.authority = authority;
@@ -51,6 +57,8 @@ public class PostController {
         this.labelMapper = labelMapper;
         this.postLabelMapper = postLabelMapper;
         this.postMajorMapper = postMajorMapper;
+        this.userFavPostMapper = userFavPostMapper;
+        this.myUserMapper = myUserMapper;
     }
 
     @ResponseBody
@@ -70,6 +78,10 @@ public class PostController {
         return post.orElse(null);
     }
 
+//    @ResponseBody
+//    @RequestMapping(method = RequestMethod.POST, path = "/search")
+//    List<Post>
+
     @ResponseBody
     @RequestMapping(method = RequestMethod.POST, path = "/delete")
     boolean delete(
@@ -84,7 +96,7 @@ public class PostController {
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.POST, path = "/create")
-    boolean createPost(
+    Boolean createPost(
             @RequestParam(required = false) String postTitle,
             @RequestParam(required = false) Integer duration,
             @RequestParam(required = false) String location,
@@ -94,8 +106,14 @@ public class PostController {
             @RequestParam(required = false) Date expiration,
             @RequestParam String authorId,
             @RequestParam(required = false) Date startTime,
-            @RequestParam(required = false) Date endTime
+            @RequestParam(required = false) Date endTime,
+            @RequestParam(required = false) List<Integer> majors,
+            @RequestParam(required = false) List<Integer> labels
     ) {
+        Optional<MyUser> user = this.myUserMapper.selectOne(c -> c
+                .where(MyUserDynamicSqlSupport.userId, isEqualTo(authorId))
+        );
+        if (!user.isPresent() || !user.get().getValidation().equals("validate")) return false;
         Post post = new Post();
         post.setPostTitle(postTitle);
         if (duration != null) post.setDuration(duration);
@@ -111,12 +129,36 @@ public class PostController {
         post.setPostDate(new Date());
         int n = this.postMapper.insert(post);
         if (n > 0) log.info(String.format("Post with id %d is created", post.getPostId()));
+        if (majors != null) {
+            majors.forEach(e -> {
+                PostMajor postMajor = new PostMajor();
+                postMajor.setPostId(post.getPostId());
+                postMajor.setMajorId(e);
+                this.postMajorMapper.insert(postMajor);
+            });
+        }
+        if (labels != null) {
+            labels.forEach(e -> {
+                PostLabel postLabel = new PostLabel();
+                postLabel.setPostId(post.getPostId());
+                postLabel.setLabelId(e);
+                this.postLabelMapper.insert(postLabel);
+            });
+        }
         return n > 0;
     }
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.POST, path = "/filter")
-    List<Post> filter(@RequestBody PostFilterObject postFilterObject) {
+    List<Post> filter(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) Integer maxDuration,
+            @RequestParam(required = false) Integer minDuration,
+            @RequestParam(required = false) Float distanceZB,
+            @RequestParam(required = false) Float distanceMH,
+            @RequestParam(required = false) List<Integer> majors
+    ) {
+        String like = title == null ? null : "%" + title + "%";
         SelectStatementProvider selectStatement = selectDistinct(
                 PostDynamicSqlSupport.postTitle,
                 PostDynamicSqlSupport.postId,
@@ -129,17 +171,18 @@ public class PostController {
                 PostDynamicSqlSupport.expiration,
                 PostDynamicSqlSupport.authorId,
                 PostDynamicSqlSupport.startTime,
-                PostDynamicSqlSupport.endTime
+                PostDynamicSqlSupport.endTime,
+                PostDynamicSqlSupport.postDate
         )
                 .from(PostDynamicSqlSupport.post)
                 .join(PostMajorDynamicSqlSupport.postMajor)
                 .on(PostDynamicSqlSupport.postId, equalTo(PostMajorDynamicSqlSupport.postId))
-                .where(PostDynamicSqlSupport.duration, isLessThanOrEqualToWhenPresent(postFilterObject.getMaxDuration()))
-                .and(PostDynamicSqlSupport.postTitle, isEqualToWhenPresent(postFilterObject.getTitle()))
-                .and(PostDynamicSqlSupport.duration, isGreaterThanOrEqualToWhenPresent(postFilterObject.getMinDuration()))
-                .and(PostDynamicSqlSupport.distancezb, isLessThanOrEqualToWhenPresent(postFilterObject.getDistanceZB()))
-                .and(PostDynamicSqlSupport.distancemh, isLessThanOrEqualToWhenPresent(postFilterObject.getDistanceMH()))
-                .and(PostMajorDynamicSqlSupport.majorId, isInWhenPresent(postFilterObject.getMajors()))
+                .where(PostDynamicSqlSupport.duration, isLessThanOrEqualToWhenPresent(maxDuration))
+                .and(PostDynamicSqlSupport.postTitle, isLikeWhenPresent(like))
+                .and(PostDynamicSqlSupport.duration, isGreaterThanOrEqualToWhenPresent(minDuration))
+                .and(PostDynamicSqlSupport.distancezb, isLessThanOrEqualToWhenPresent(distanceZB))
+                .and(PostDynamicSqlSupport.distancemh, isLessThanOrEqualToWhenPresent(distanceMH))
+                .and(PostMajorDynamicSqlSupport.majorId, isInWhenPresent(majors))
                 .build()
                 .render(RenderingStrategies.MYBATIS3);
 
@@ -287,5 +330,97 @@ public class PostController {
             @RequestParam Integer postId
     ) {
         return this.postHitMapper.count(c -> c.where(PostDynamicSqlSupport.postId, isEqualTo(postId)));
+    }
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.POST, path = "/fav")
+    Boolean fav(
+            @RequestParam String uid,
+            @RequestParam Integer postId
+    ) {
+        UserFavPost userFavPost = new UserFavPost();
+        userFavPost.setUserId(uid);
+        userFavPost.setPostId(postId);
+        int n = this.userFavPostMapper.insert(userFavPost);
+
+        return n > 0;
+    }
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.POST, path = "/favoured")
+    List<Post> favoured(
+            @RequestParam String uid
+    ) {
+        SelectStatementProvider selectStatementProvider = selectDistinct(
+                PostDynamicSqlSupport.postTitle,
+                PostDynamicSqlSupport.postId,
+                PostDynamicSqlSupport.duration,
+                PostDynamicSqlSupport.location,
+                PostDynamicSqlSupport.distancezb,
+                PostDynamicSqlSupport.distancemh,
+                PostDynamicSqlSupport.postContent,
+                PostDynamicSqlSupport.completed,
+                PostDynamicSqlSupport.expiration,
+                PostDynamicSqlSupport.authorId,
+                PostDynamicSqlSupport.startTime,
+                PostDynamicSqlSupport.endTime
+        )
+                .from(PostDynamicSqlSupport.post)
+                .join(UserFavPostDynamicSqlSupport.userFavPost)
+                .on(PostDynamicSqlSupport.postId, equalTo(UserFavPostDynamicSqlSupport.postId))
+                .where(UserFavPostDynamicSqlSupport.userId, isEqualTo(uid))
+                .build()
+                .render(RenderingStrategies.MYBATIS3);
+        return this.postMapper.selectMany(selectStatementProvider);
+    }
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.DELETE, path = "/cancelFav")
+    Boolean cancelFav(
+            @RequestParam String uid,
+            @RequestParam Integer postId
+    ) {
+        int n = this.userFavPostMapper.delete(c -> c
+                .where(UserFavPostDynamicSqlSupport.userId, isEqualTo(uid))
+                .and(UserFavPostDynamicSqlSupport.postId, isEqualTo(postId))
+        );
+        return n > 0;
+    }
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.POST, path = "/isFav")
+    Boolean isFav(
+            @RequestParam String uid,
+            @RequestParam Integer postId
+    ) {
+        List<UserFavPost> userFavPost = this.userFavPostMapper.select(c -> c
+                .where(UserFavPostDynamicSqlSupport.userId, isEqualTo(uid))
+                .and(UserFavPostDynamicSqlSupport.postId, isEqualTo(postId))
+        );
+
+        return !userFavPost.isEmpty();
+    }
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.POST, path = "/history")
+    List<Post> history(
+            @RequestParam String uid
+    ) {
+        SelectStatementProvider selectStatementProvider = selectDistinct(
+                PostHitDynamicSqlSupport.postId
+        )
+                .from(PostHitDynamicSqlSupport.postHit)
+                .where(PostHitDynamicSqlSupport.hitterId, isEqualTo(uid))
+                .build()
+                .render(RenderingStrategies.MYBATIS3);
+        List<PostHit> postHits = this.postHitMapper.selectMany(selectStatementProvider);
+        List<Integer> idList = new ArrayList<>();
+        postHits.forEach(e -> idList.add(e.getPostId()));
+
+        if (idList.isEmpty()) return new ArrayList<>();
+
+        return this.postMapper.select(c -> c
+                .where(PostDynamicSqlSupport.postId, isIn(idList))
+        );
     }
 }

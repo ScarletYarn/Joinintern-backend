@@ -1,6 +1,8 @@
 USE joinintern_dev;
 
 -- These are for the relationship.
+DROP TABLE IF EXISTS user_fav_post;
+DROP TABLE IF EXISTS user_fav_video;
 DROP TABLE IF EXISTS post_label;
 DROP TABLE IF EXISTS post_major;
 -- These are for the entity.

@@ -9,10 +9,6 @@ spring:
     url: jdbc:mysql://localhost:3306/joinintern
     username: prod
     password: join@intern
-    schema:
-      - classpath:sql/prod-db.sql
-      - classpath:sql/ddl.sql
-      - classpath:sql/common-data.sql
 
 logging:
   file:

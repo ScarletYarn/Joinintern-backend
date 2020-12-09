@@ -23,6 +23,7 @@ CREATE TABLE my_user (
     avatar VARCHAR (300) ,
     enterprise_type_id INTEGER ,
     student_id VARCHAR(20) UNICODE ,
+    description VARCHAR(2000),
     FOREIGN KEY(enterprise_type_id) REFERENCES enterprise_type(enterprise_type_id) ,
     FOREIGN KEY(major) REFERENCES major(major_id)
 );
@@ -109,4 +110,18 @@ CREATE TABLE post_major (
     major_id INTEGER ,
     FOREIGN KEY(post_id) REFERENCES post(post_id) ,
     FOREIGN KEY(major_id) REFERENCES major(major_id)
+);
+
+CREATE TABLE user_fav_post (
+    user_id VARCHAR(100),
+    post_id INTEGER,
+    FOREIGN KEY (user_id) REFERENCES my_user(user_id),
+    FOREIGN KEY (post_id) REFERENCES post(post_id)
+);
+
+CREATE TABLE user_fav_video (
+    user_id VARCHAR(100),
+    video_id INTEGER,
+    FOREIGN KEY (user_id) REFERENCES my_user(user_id),
+    FOREIGN KEY (video_id) REFERENCES video(video_id)
 );
